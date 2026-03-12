@@ -33,6 +33,14 @@ function Auth() {
     if (error) alert('Error: ' + error.message)
   }
 
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: 'http://localhost:5173' }
+    })
+    if (error) alert('Error: ' + error.message)
+  }
+
   return (
     <div>
       <h1>{isLogin ? 'Login' : 'Register'}</h1>
@@ -58,6 +66,10 @@ function Auth() {
         Login with GitHub
       </button>
 
+      <button onClick={handleGoogleLogin}>
+        Login with Google 🔵
+      </button>
+      
       <button onClick={() => setIsLogin(!isLogin)}>
         {isLogin ? 'Dont have an account? Register now' : 'Have Account? Login now'}
       </button>
