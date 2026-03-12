@@ -23,6 +23,16 @@ function Auth() {
     setLoading(false)
   }
 
+  const handleGitHubLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: 'http://localhost:5173'
+      }
+    })
+    if (error) alert('Error: ' + error.message)
+  }
+
   return (
     <div>
       <h1>{isLogin ? 'Login' : 'Register'}</h1>
@@ -43,6 +53,11 @@ function Auth() {
           {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
         </button>
       </form>
+
+      <button onClick={handleGitHubLogin}>
+        Login with GitHub
+      </button>
+
       <button onClick={() => setIsLogin(!isLogin)}>
         {isLogin ? 'Dont have an account? Register now' : 'Have Account? Login now'}
       </button>
