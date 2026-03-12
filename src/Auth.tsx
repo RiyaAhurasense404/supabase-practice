@@ -1,49 +1,53 @@
-import { useState } from 'react'
-import { supabase } from './supabase'
+import { useState } from "react";
+import { supabase } from "./supabase";
+import { Link } from "react-router-dom";
 
 function Auth() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLogin, setIsLogin] = useState(true)
-  const [loading, setLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     if (isLogin) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) alert('Error: ' + error.message)
-      else alert('Login successfull! ✅')
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) alert("Error: " + error.message);
+      else alert("Login successfull! ✅");
     } else {
-      const { error } = await supabase.auth.signUp({ email, password })
-      if (error) alert('Error: ' + error.message)
-      else alert('Registration successfull! ✅')
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) alert("Error: " + error.message);
+      else alert("Registration successfull! ✅");
     }
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleGitHubLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
+      provider: "github",
       options: {
-        redirectTo: 'http://localhost:5173'
-      }
-    })
-    if (error) alert('Error: ' + error.message)
-  }
+        redirectTo: "http://localhost:5173",
+      },
+    });
+    if (error) alert("Error: " + error.message);
+  };
 
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: 'http://localhost:5173' }
-    })
-    if (error) alert('Error: ' + error.message)
-  }
+      provider: "google",
+      options: { redirectTo: "http://localhost:5173" },
+    });
+    if (error) alert("Error: " + error.message);
+  };
 
   return (
     <div>
-      <h1>{isLogin ? 'Login' : 'Register'}</h1>
+      <h1>{isLogin ? "Login" : "Register"}</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="email"
@@ -58,23 +62,23 @@ function Auth() {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit" disabled={loading}>
-          {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
+          {loading ? "Loading..." : isLogin ? "Login" : "Register"}
         </button>
       </form>
 
-      <button onClick={handleGitHubLogin}>
-        Login with GitHub
-      </button>
+      {isLogin && <Link to="/forgot-password">Forgot Password?</Link>}
 
-      <button onClick={handleGoogleLogin}>
-        Login with Google 🔵
-      </button>
-      
+      <button onClick={handleGitHubLogin}>Login with GitHub</button>
+
+      <button onClick={handleGoogleLogin}>Login with Google 🔵</button>
+
       <button onClick={() => setIsLogin(!isLogin)}>
-        {isLogin ? 'Dont have an account? Register now' : 'Have Account? Login now'}
+        {isLogin
+          ? "Dont have an account? Register now"
+          : "Have Account? Login now"}
       </button>
     </div>
-  )
+  );
 }
 
-export default Auth
+export default Auth;
