@@ -1,58 +1,46 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
+import Auth from './Auth'
+import ContactForm from './ContactForm'
 
 function App() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [message, setMessage] = useState('')
+  const [session, setSession] = useState<any>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+  }, [])
 
-    const { error } = await supabase
-      .from('contacts')
-      .insert([{ name, email, message }])
-
-    if (error) {
-      alert('Error: ' + error.message)
-    } else {
-      alert('Data save ho gaya! ✅')
-      setName('')
-      setEmail('')
-      setMessage('')
-    }
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    setSession(null)
   }
 
   return (
-    <div>
-      <h1>Contact Form</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div>
-          <textarea
-            placeholder="Message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+    <BrowserRouter>
+      {/* Navigation */}
+      <nav>
+        <Link to="/">Contact Form</Link> |{' '}
+        <Link to="/auth">Login / Register</Link>
+        {session && (
+          <>
+            {' '}| <span>{session.user.email}</span>{' '}
+            <button onClick={handleLogout}>Logout</button>
+          </>
+        )}
+      </nav>
+
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<ContactForm />} />
+        <Route path="/auth" element={<Auth />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
